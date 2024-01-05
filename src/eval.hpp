@@ -21,6 +21,6 @@
 
 #include "chess.hpp"
 
-int Eval(const Board& pos);
+int Eval(const Board& pos, int depth);
 
 #endif

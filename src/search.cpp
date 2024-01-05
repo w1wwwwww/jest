@@ -21,12 +21,13 @@
 #include "chess.hpp"
 #include "eval.hpp"
 
-int Search(Board& pos, int depth);
+int Search(Board& pos, int depth, int dist);
 
 Move RSearch(Board& pos, int depth)
 {
-    int max = -10000;
-    int score, best;
+    int max = -10001;
+    int best = 0;
+    int score;
     Movelist moves;
     movegen::legalmoves(moves, pos);
 
@@ -34,7 +35,7 @@ Move RSearch(Board& pos, int depth)
     for(const Move& move : moves)
     {
         pos.makeMove(move);
-        score = -Search(pos, depth - 1);
+        score = -Search(pos, depth - 1, 0);
         pos.unmakeMove(move);
 
         if(score > max)
@@ -49,11 +50,12 @@ Move RSearch(Board& pos, int depth)
     return moves[best];
 }
 
-int Search(Board& pos, int depth)
+int Search(Board& pos, int depth, int dist)
 {
     if(depth == 0)
-        return Eval(pos);
+        return Eval(pos, dist);
     
+    dist++;
     int max = -10000;
     int score;
     Movelist moves;
@@ -62,7 +64,7 @@ int Search(Board& pos, int depth)
     for(const Move& move : moves)
     {
         pos.makeMove(move);
-        score = -Search(pos, depth - 1);
+        score = -Search(pos, depth - 1, dist + 1);
         pos.unmakeMove(move);
 
         if(score > max)

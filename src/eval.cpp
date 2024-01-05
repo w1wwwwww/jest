@@ -23,8 +23,13 @@
 constexpr int PVals[5] = { 100, 320, 330, 500, 900 };
 constexpr PieceType pt[5] = { PieceType("p"), PieceType("n"), PieceType("b"), PieceType("r"), PieceType("q") }; // TODO: make this better
 
-int Eval(const Board& pos)
+int Eval(const Board& pos, int depth)
 {
+    if(pos.isGameOver().first == GameResultReason::CHECKMATE)
+        return -1000 - depth;
+    else if(pos.isGameOver().second == GameResult::DRAW)
+        return 0;
+
     int eval = 0;
     for(int i = 0; i < 5; i++)
     {
