@@ -21,6 +21,8 @@
 #include "chess.hpp"
 #include "eval.hpp"
 
+int Search(Board& pos, int depth);
+
 Move RSearch(Board& pos, int depth)
 {
     int max = -10000;
