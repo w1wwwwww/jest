@@ -34,7 +34,7 @@ int main()
         board.makeMove(move);
         move = RSearch(board, 5);
         board.makeMove(move);
-        std::cout << board.getFen();
+        std::cout << board.getFen() << std::endl;
     }
 
     return 0;
