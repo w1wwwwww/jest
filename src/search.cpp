@@ -21,7 +21,8 @@
 #include "chess.hpp"
 #include "eval.hpp"
 
-int Search(Board& pos, int depth, int dist);
+int Search(Board& pos, int alpha, int beta, int depth, int dist);
+int QSearch(Board& pos, int alpha, int beta, int dist);
 
 Move RSearch(Board& pos, int depth)
 {
@@ -35,7 +36,7 @@ Move RSearch(Board& pos, int depth)
     for(const Move& move : moves)
     {
         pos.makeMove(move);
-        score = -Search(pos, depth - 1, 0);
+        score = -Search(pos, max, 10001, depth - 1, 1);
         pos.unmakeMove(move);
 
         if(score > max)
@@ -50,13 +51,11 @@ Move RSearch(Board& pos, int depth)
     return moves[best];
 }
 
-int Search(Board& pos, int depth, int dist)
+int Search(Board& pos, int alpha, int beta, int depth, int dist)
 {
     if(depth == 0)
-        return Eval(pos, dist);
-    
-    dist++;
-    int max = -10000;
+        return QSearch(pos, alpha, beta, dist);
+
     int score;
     Movelist moves;
     movegen::legalmoves(moves, pos);
@@ -64,12 +63,45 @@ int Search(Board& pos, int depth, int dist)
     for(const Move& move : moves)
     {
         pos.makeMove(move);
-        score = -Search(pos, depth - 1, dist + 1);
+        score = -Search(pos, -beta, -alpha, depth - 1, dist + 1);
         pos.unmakeMove(move);
 
-        if(score > max)
-            max = score;
+        if(score >= beta)
+            return beta;
+
+        if(score > alpha)
+            alpha = score;
     }
 
-    return max;
+    return alpha;
+}
+
+int QSearch(Board& pos, int alpha, int beta, int dist)
+{
+    int standPat = Eval(pos, dist);
+
+    if(standPat >= beta)
+        return beta;
+    
+    if(standPat > alpha)
+        alpha = standPat;
+    
+    int score;
+    Movelist moves;
+    movegen::legalmoves<movegen::MoveGenType::CAPTURE>(moves, pos);
+
+    for(const Move& move : moves)
+    {
+        pos.makeMove(move);
+        score = -QSearch(pos, -beta, -alpha, dist + 1);
+        pos.unmakeMove(move);
+
+        if(score >= beta)
+            return beta;
+        
+        if(score > alpha)
+            alpha = score;
+    }
+
+    return alpha;
 }

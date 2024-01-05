@@ -18,16 +18,19 @@
 
 #include "eval.hpp"
 
+#include <utility>
+
 #include "chess.hpp"
 
 constexpr int PVals[5] = { 100, 320, 330, 500, 900 };
 constexpr PieceType pt[5] = { PieceType("p"), PieceType("n"), PieceType("b"), PieceType("r"), PieceType("q") }; // TODO: make this better
 
-int Eval(const Board& pos, int depth)
+int Eval(Board& pos, int depth)
 {
-    if(pos.isGameOver().first == GameResultReason::CHECKMATE)
+    std::pair<GameResultReason, GameResult> result = pos.isGameOver();
+    if(result.first == GameResultReason::CHECKMATE)
         return -1000 - depth;
-    else if(pos.isGameOver().second == GameResult::DRAW)
+    else if(result.second == GameResult::DRAW)
         return 0;
 
     int eval = 0;
@@ -36,6 +39,15 @@ int Eval(const Board& pos, int depth)
         eval += (pos.us(pos.sideToMove()) & pos.pieces(pt[i])).count() * PVals[i];
         eval -= (pos.us(~pos.sideToMove()) & pos.pieces(pt[i])).count() * PVals[i];
     }
+
+    // mobility bonus
+    Movelist moves;
+    movegen::legalmoves(moves, pos);
+    eval += moves.size() * 10;
+    pos.makeNullMove();
+    movegen::legalmoves(moves, pos);
+    eval -= moves.size() * 10;
+    pos.unmakeNullMove();
 
     return eval;
 }
