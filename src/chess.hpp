@@ -1,4 +1,4 @@
-/*  
+/*
     jest - a chess engine
     Copyright (C) 2024  Jake Senne
 

@@ -1,4 +1,4 @@
-/*  
+/*
     jest - a chess engine
     Copyright (C) 2024  Jake Senne
 
@@ -56,7 +56,7 @@ int Search(Board& pos, int alpha, int beta, int depth, int dist)
     if(depth == 0)
         return QSearch(pos, alpha, beta, dist);
 
-    int score;
+    int score = -10001;
     Movelist moves;
     movegen::legalmoves(moves, pos);
 
