@@ -16,11 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "uci.hpp"
+#ifndef UCI_H
+#define UCI_H 1
 
-int main()
-{
-    Uci();
+void Uci(void);
 
-    return 0;
-}
+#endif
